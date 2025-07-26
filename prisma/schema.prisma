@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -22,6 +21,8 @@ model LoanOffer {
   maxAmount    Int
   minAmount    Int
   type         String
+
+  ComparisonOffer ComparisonOffer[]
 }
 
 model ComparisonLog {
@@ -30,4 +31,15 @@ model ComparisonLog {
   requestedAmount Int
   repaymentPeriod Int
   loanType        String
+  offers          ComparisonOffer[]
+}
+
+model ComparisonOffer {
+  id             String         @id @default(uuid())
+  comparisonId   String
+  comparison     ComparisonLog  @relation(fields: [comparisonId], references: [id])
+  offerId        String
+  offer          LoanOffer      @relation(fields: [offerId], references: [id])
+  monthlyPayment Float
+  totalRepayment Float
 }
