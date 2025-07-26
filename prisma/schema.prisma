@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LoanOffer {
+  id           String @id @default(uuid())
+  provider     String
+  interestRate Float
+  termMonths   Int
+  maxAmount    Int
+  minAmount    Int
+  type         String
+
+  ComparisonOffer ComparisonOffer[]
+}
+
+model ComparisonLog {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  requestedAmount Int
+  repaymentPeriod Int
+  loanType        String
+  offers          ComparisonOffer[]
+}
+
+model ComparisonOffer {
+  id             String         @id @default(uuid())
+  comparisonId   String
+  comparison     ComparisonLog  @relation(fields: [comparisonId], references: [id])
+  offerId        String
+  offer          LoanOffer      @relation(fields: [offerId], references: [id])
+  monthlyPayment Float
+  totalRepayment Float
+}
